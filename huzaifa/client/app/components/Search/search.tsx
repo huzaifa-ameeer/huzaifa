@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Search as SearchIcon, X } from "lucide-react";
 import { blogs } from "../../data/blogs";
 import { skills } from "../../data/skills";
@@ -57,6 +59,7 @@ export default function Search() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const openSearch = () => {
     setQuery("");
@@ -64,6 +67,26 @@ export default function Search() {
   };
 
   const closeSearch = () => setIsOpen(false);
+
+  function handleResultClick(
+    event: MouseEvent<HTMLAnchorElement>,
+    result: SearchResult
+  ) {
+    if (event.metaKey || event.ctrlKey || event.shiftKey) return;
+    event.preventDefault();
+    closeSearch();
+
+    const hashIndex = result.href.indexOf("#");
+    const hash = hashIndex >= 0 ? result.href.slice(hashIndex + 1) : "";
+
+    router.push(result.href);
+    if (hash) {
+      setTimeout(() => {
+        const element = document.getElementById(hash);
+        element?.scrollIntoView({ block: "start" });
+      }, 200);
+    }
+  }
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -82,6 +105,16 @@ export default function Search() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
   }, [isOpen]);
 
   useEffect(() => {
@@ -114,9 +147,10 @@ export default function Search() {
         </span>
       </button>
 
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-[60] bg-white/70 backdrop-blur-md dark:bg-black/70"
+      {isOpen &&
+        createPortal(
+          <div
+          className="fixed inset-0 z-[100] bg-white/60 backdrop-blur-xl dark:bg-black/60"
           onClick={closeSearch}
         >
       <div
@@ -150,10 +184,10 @@ export default function Search() {
               </p>
             ) : (
               results.map((result) => (
-                <Link
+<Link
                   key={result.id}
                   href={result.href}
-onClick={closeSearch}
+                  onClick={(event) => handleResultClick(event, result)}
                   className="flex items-center justify-between gap-4 border-b border-zinc-200/60 px-4 py-3 transition-colors last:border-0 hover:bg-zinc-100 dark:border-zinc-800/60 dark:hover:bg-zinc-800"
                 >
                   <div className="min-w-0">
@@ -175,7 +209,8 @@ onClick={closeSearch}
           </div>
         </div>
       </div>
-      </div>
+      </div>,
+        document.body
       )}
     </>
   );
