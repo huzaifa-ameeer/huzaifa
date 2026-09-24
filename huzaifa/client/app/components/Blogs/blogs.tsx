@@ -16,9 +16,7 @@ export default async function Blogs() {
         </p>
 
         {blogs.length === 0 ? (
-          <p className="mt-12 text-zinc-500 dark:text-zinc-400">
-            No blogs yet.
-          </p>
+          <p className="mt-12 text-zinc-500 dark:text-zinc-400">No blogs yet.</p>
         ) : (
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {blogs.map((blog) => (
