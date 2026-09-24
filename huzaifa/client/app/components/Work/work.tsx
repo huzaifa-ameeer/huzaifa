@@ -21,7 +21,7 @@ export default async function Work() {
   return (
     <section
       id="work"
-      className="w-full bg-white px-6 pb-20 pt-8 text-black dark:bg-black dark:text-white"
+      className="w-full bg-white px-6 pb-20 pt-8 text-zinc-900 md:px-12 lg:px-20 dark:bg-black dark:text-white"
     >
       <div className="mx-auto max-w-7xl">
         <h2 className="text-4xl font-bold tracking-tight md:text-5xl">
