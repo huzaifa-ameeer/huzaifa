@@ -5,9 +5,9 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search as SearchIcon, X } from "lucide-react";
-import { blogs } from "../../data/blogs";
 import { skills } from "../../data/skills";
 import { projects } from "../../data/projects";
+import { API_URL, type Blog } from "../../lib/api";
 
 type SearchResult = {
   id: string;
@@ -40,24 +40,16 @@ const projectResults: SearchResult[] = projects.map((project) => ({
   category: "Project",
 }));
 
-const blogResults: SearchResult[] = blogs.map((blog) => ({
-  id: `blog-${blog.slug}`,
-  title: blog.title,
-  description: blog.excerpt,
-  href: `/blogs/${blog.slug}`,
-  category: "Blog",
-}));
-
 const allResults: SearchResult[] = [
   ...pages,
   ...skillResults,
   ...projectResults,
-  ...blogResults,
 ];
 
 export default function Search() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [blogResults, setBlogResults] = useState<SearchResult[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -123,15 +115,32 @@ export default function Search() {
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    fetch(`${API_URL}/api/blogs`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data: Blog[]) =>
+        setBlogResults(
+          data.map((blog) => ({
+            id: `blog-${blog._id}`,
+            title: blog.title,
+            description: blog.content.slice(0, 120),
+            href: `/blogs/${blog._id}`,
+            category: "Blog",
+          }))
+        )
+      )
+      .catch(() => setBlogResults([]));
+  }, []);
+
   const results = useMemo(() => {
     const trimmed = query.trim().toLowerCase();
-    if (!trimmed) return allResults;
-    return allResults.filter((result) =>
+    if (!trimmed) return [...allResults, ...blogResults];
+    return [...allResults, ...blogResults].filter((result) =>
       `${result.title} ${result.description ?? ""} ${result.category}`
         .toLowerCase()
         .includes(trimmed)
     );
-  }, [query]);
+  }, [query, blogResults]);
 
   return (
     <>

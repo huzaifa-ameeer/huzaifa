@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import { connectDB } from "./config/db";
+import { seedBlogsIfEmpty } from "./config/seed";
 import blogRoutes from "./routes/blog";
 
 const app = express();
@@ -20,7 +21,8 @@ app.get("/api/health", (_req, res) => {
 
 app.use("/api/blogs", blogRoutes);
 
-connectDB().then(() => {
+connectDB().then(async () => {
+  await seedBlogsIfEmpty();
   app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
   });
