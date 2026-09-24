@@ -102,13 +102,13 @@ export default function Search() {
 
   return (
     <>
-      <button
+<button
         onClick={openSearch}
-        className="flex items-center gap-2 rounded-md border border-zinc-800 p-2 text-zinc-200 transition hover:border-white hover:bg-zinc-800 md:px-3"
+        className="flex items-center gap-2 rounded-md border border-transparent p-2 text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-200 md:px-3 dark:border-zinc-800 dark:text-zinc-200 dark:hover:border-white dark:hover:bg-zinc-800"
         aria-label="Open search"
       >
         <SearchIcon size={20} />
-        <span className="hidden md:inline text-sm font-medium">Search</span>
+        <span className="hidden text-sm font-medium md:inline">Search</span>
         <span className="hidden rounded border border-zinc-700 px-1.5 py-0.5 text-xs text-zinc-400 md:inline">
           Ctrl K
         </span>
@@ -116,15 +116,15 @@ export default function Search() {
 
       {isOpen && (
         <div
-          className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-md"
+          className="fixed inset-0 z-[60] bg-white/70 backdrop-blur-md dark:bg-black/70"
           onClick={closeSearch}
         >
       <div
         className="mx-auto mt-16 w-full max-w-3xl px-4 sm:mt-24"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 shadow-2xl">
-          <div className="flex items-center gap-3 border-b border-zinc-800 px-4 py-3">
+        <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="flex items-center gap-3 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
             <SearchIcon size={18} className="text-zinc-500" />
             <input
               ref={inputRef}
@@ -132,11 +132,11 @@ export default function Search() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search skills, projects, blogs..."
-              className="w-full bg-transparent text-sm text-white placeholder-zinc-500 outline-none"
+              className="w-full bg-transparent text-sm text-zinc-900 placeholder-zinc-500 outline-none dark:text-white"
             />
             <button
               onClick={closeSearch}
-              className="rounded-md p-1 text-zinc-400 transition hover:bg-zinc-800 hover:text-white"
+              className="rounded-md p-1 text-zinc-400 transition hover:bg-zinc-200 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-white"
               aria-label="Close search"
             >
               <X size={16} />
@@ -154,10 +154,10 @@ export default function Search() {
                   key={result.id}
                   href={result.href}
 onClick={closeSearch}
-                  className="flex items-center justify-between gap-4 border-b border-zinc-800/60 px-4 py-3 transition-colors last:border-0 hover:bg-zinc-800"
+                  className="flex items-center justify-between gap-4 border-b border-zinc-200/60 px-4 py-3 transition-colors last:border-0 hover:bg-zinc-100 dark:border-zinc-800/60 dark:hover:bg-zinc-800"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-white">
+                    <p className="truncate text-sm font-semibold text-zinc-900 dark:text-white">
                       {result.title}
                     </p>
                     {result.description && (
@@ -166,7 +166,7 @@ onClick={closeSearch}
                       </p>
                     )}
                   </div>
-                  <span className="shrink-0 rounded-md border border-zinc-700 px-2 py-0.5 text-xs text-zinc-400">
+                  <span className="shrink-0 rounded-md border border-zinc-300 px-2 py-0.5 text-xs text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
                     {result.category}
                   </span>
                 </Link>

@@ -6,7 +6,7 @@ import Contact from "./components/Contact/contact";
 
 export default function page() {
   return (
-    <main className="w-full bg-black">
+    <main className="w-full bg-white dark:bg-black">
       <Hero />
       <Skills />
       <Work />

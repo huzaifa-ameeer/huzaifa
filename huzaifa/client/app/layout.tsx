@@ -27,9 +27,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           position="top-center"
           toastOptions={{
             style: {
-              background: "#18181b",
-              color: "#ffffff",
-              border: "1px solid #3f3f46",
+              background: "var(--background)",
+              color: "var(--foreground)",
+              border: "1px solid var(--foreground)",
             },
           }}
         />

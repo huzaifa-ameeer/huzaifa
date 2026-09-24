@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import Search from "../Search/search";
+import ThemeToggle from "../ThemeToggle/themeToggle";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,16 +22,16 @@ export default function Navbar() {
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-md md:hidden"
+          className="fixed inset-0 z-40 bg-white/50 backdrop-blur-md dark:bg-black/50 md:hidden"
         />
       )}
-      <nav className="absolute top-0 z-50 w-full border-b border-zinc-800 bg-black/80">
+      <nav className="absolute top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 sm:px-10 lg:px-20 xl:px-32">
         
         {/* Logo */}
         <Link
           href="/"
-          className="text-xl font-bold tracking-tight text-white"
+          className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white"
         >
           Huzaifa
         </Link>
@@ -41,20 +42,21 @@ export default function Navbar() {
             <Link
               key={link.name}
               href={link.href}
-              className="text-sm font-medium text-zinc-200 transition-colors hover:text-white"
+              className="text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white"
             >
               {link.name}
             </Link>
           ))}
         </div>
 
-        {/* Search + Mobile Menu Button */}
+        {/* Search + Theme + Mobile Menu Button */}
         <div className="flex items-center gap-1">
+          <ThemeToggle />
           <Search />
 
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="rounded-md p-2 text-zinc-200 transition hover:bg-zinc-800 md:hidden"
+            className="rounded-md p-2 text-zinc-700 transition hover:bg-zinc-200 dark:text-zinc-200 dark:hover:bg-zinc-800 md:hidden"
             aria-label="Toggle menu"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -64,7 +66,7 @@ export default function Navbar() {
 
       {/* Mobile Navigation */}
       <div
-        className={`overflow-hidden border-t border-zinc-800 bg-black transition-all duration-300 md:hidden ${
+        className={`overflow-hidden border-t border-zinc-200 bg-white transition-all duration-300 dark:border-zinc-800 dark:bg-black md:hidden ${
           isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
@@ -74,7 +76,7 @@ export default function Navbar() {
               key={link.name}
               href={link.href}
               onClick={() => setIsOpen(false)}
-              className="border-b border-zinc-800 py-4 text-sm font-medium text-zinc-200 transition-colors last:border-0 hover:text-white"
+              className="border-b border-zinc-200 py-4 text-sm font-medium text-zinc-600 transition-colors last:border-0 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-200 dark:hover:text-white"
             >
               {link.name}
             </Link>

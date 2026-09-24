@@ -24,32 +24,32 @@ export default function Contact() {
   return (
     <section
       id="contact"
-      className="w-full bg-black px-6 pb-20 pt-8 text-white md:px-12 lg:px-20"
+      className="w-full bg-white px-6 pb-20 pt-8 text-zinc-900 md:px-12 lg:px-20 dark:bg-black dark:text-white"
     >
       <div className="mx-auto max-w-7xl">
         <h2 className="text-4xl font-bold tracking-tight md:text-5xl">
           Contact
         </h2>
-        <p className="mt-4 text-lg text-zinc-400">
+        <p className="mt-4 text-lg text-zinc-500 dark:text-zinc-400">
           Have a project in mind? Let&apos;s talk.
         </p>
 
         <div className="mt-12 grid gap-10 md:grid-cols-2">
           <div className="space-y-6">
             <div>
-              <h3 className="text-sm font-semibold text-zinc-500">Email</h3>
+              <h3 className="text-sm font-semibold text-zinc-400 dark:text-zinc-500">Email</h3>
               <a
                 href={`mailto:${EMAIL}`}
-                className="mt-1 inline-block text-lg text-zinc-200 transition-colors hover:text-white"
+                className="mt-1 inline-block text-lg text-zinc-700 transition-colors hover:text-zinc-950 dark:text-zinc-200 dark:hover:text-white"
               >
                 {EMAIL}
               </a>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-zinc-500">Phone</h3>
+              <h3 className="text-sm font-semibold text-zinc-400 dark:text-zinc-500">Phone</h3>
               <a
                 href={`tel:${PHONE.replace(/[^+\d]/g, "")}`}
-                className="mt-1 inline-block text-lg text-zinc-200 transition-colors hover:text-white"
+                className="mt-1 inline-block text-lg text-zinc-700 transition-colors hover:text-zinc-950 dark:text-zinc-200 dark:hover:text-white"
               >
                 {PHONE}
               </a>
@@ -63,7 +63,7 @@ export default function Contact() {
               onChange={(e) => setName(e.target.value)}
               placeholder="First Name"
               required
-              className="w-full rounded-lg border border-zinc-800 bg-zinc-900/60 px-4 py-3 text-white placeholder-zinc-500 outline-none transition-colors focus:border-white"
+              className="w-full rounded-lg border border-zinc-200 bg-zinc-100 px-4 py-3 text-zinc-900 placeholder-zinc-500 outline-none transition-colors focus:border-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-white dark:focus:border-white"
             />
             <input
               type="text"
@@ -71,7 +71,7 @@ export default function Contact() {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Title"
               required
-              className="w-full rounded-lg border border-zinc-800 bg-zinc-900/60 px-4 py-3 text-white placeholder-zinc-500 outline-none transition-colors focus:border-white"
+              className="w-full rounded-lg border border-zinc-200 bg-zinc-100 px-4 py-3 text-zinc-900 placeholder-zinc-500 outline-none transition-colors focus:border-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-white dark:focus:border-white"
             />
             <textarea
               value={message}
@@ -79,11 +79,11 @@ export default function Contact() {
               placeholder="Message"
               required
               rows={5}
-              className="w-full resize-none rounded-lg border border-zinc-800 bg-zinc-900/60 px-4 py-3 text-white placeholder-zinc-500 outline-none transition-colors focus:border-white"
+              className="w-full resize-none rounded-lg border border-zinc-200 bg-zinc-100 px-4 py-3 text-zinc-900 placeholder-zinc-500 outline-none transition-colors focus:border-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-white dark:focus:border-white"
             />
             <button
               type="submit"
-              className="mt-2 w-fit rounded-lg border border-zinc-800 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-white hover:bg-zinc-800"
+              className="mt-2 w-fit rounded-lg border border-zinc-200 px-6 py-3 text-sm font-semibold text-zinc-900 transition-colors hover:border-zinc-500 hover:bg-zinc-200 dark:border-zinc-800 dark:text-white dark:hover:border-white dark:hover:bg-zinc-800"
             >
               Send Message
             </button>
