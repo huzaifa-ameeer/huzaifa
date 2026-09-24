@@ -35,3 +35,21 @@ export async function getBlog(id: string): Promise<Blog | null> {
     return null;
   }
 }
+
+export type Project = {
+  _id: string;
+  name: string;
+  link: string;
+  content: string;
+  createdAt: string;
+};
+
+export async function getProjects(): Promise<Project[]> {
+  try {
+    const res = await fetch(`${API_URL}/api/projects`, { cache: "no-store" });
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}

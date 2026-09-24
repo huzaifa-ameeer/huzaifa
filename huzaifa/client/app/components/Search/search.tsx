@@ -6,8 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search as SearchIcon, X } from "lucide-react";
 import { skills } from "../../data/skills";
-import { projects } from "../../data/projects";
-import { API_URL, type Blog } from "../../lib/api";
+import { API_URL, type Blog, type Project } from "../../lib/api";
 
 type SearchResult = {
   id: string;
@@ -32,24 +31,16 @@ const skillResults: SearchResult[] = skills.map((skill) => ({
   category: "Skill",
 }));
 
-const projectResults: SearchResult[] = projects.map((project) => ({
-  id: `project-${project.name}`,
-  title: project.name,
-  description: project.description,
-  href: "/#work",
-  category: "Project",
-}));
-
 const allResults: SearchResult[] = [
   ...pages,
   ...skillResults,
-  ...projectResults,
 ];
 
 export default function Search() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [blogResults, setBlogResults] = useState<SearchResult[]>([]);
+  const [projectResults, setProjectResults] = useState<SearchResult[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -130,17 +121,37 @@ export default function Search() {
         )
       )
       .catch(() => setBlogResults([]));
+
+    fetch(`${API_URL}/api/projects`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data: Project[]) =>
+        setProjectResults(
+          data.map((project) => ({
+            id: `project-${project._id}`,
+            title: project.name,
+            description: project.content,
+            href: "/#work",
+            category: "Project",
+          }))
+        )
+      )
+      .catch(() => setProjectResults([]));
   }, []);
 
   const results = useMemo(() => {
+    const dynamicResults = [
+      ...allResults,
+      ...blogResults,
+      ...projectResults,
+    ];
     const trimmed = query.trim().toLowerCase();
-    if (!trimmed) return [...allResults, ...blogResults];
-    return [...allResults, ...blogResults].filter((result) =>
+    if (!trimmed) return dynamicResults;
+    return dynamicResults.filter((result) =>
       `${result.title} ${result.description ?? ""} ${result.category}`
         .toLowerCase()
         .includes(trimmed)
     );
-  }, [query, blogResults]);
+  }, [query, blogResults, projectResults]);
 
   return (
     <>

@@ -1,4 +1,5 @@
 import Blog from "../models/Blog";
+import Project from "../models/Project";
 
 const sampleBlogs = [
   {
@@ -29,4 +30,39 @@ export async function seedBlogsIfEmpty() {
 
   await Blog.insertMany(sampleBlogs);
   console.log(`Seeded ${sampleBlogs.length} blogs`);
+}
+
+const sampleProjects = [
+  {
+    name: "E-Commerce Store",
+    link: "https://github.com/yourusername/ecommerce-store",
+    content:
+      "A full-featured e-commerce platform with cart, checkout, and payment integration.",
+  },
+  {
+    name: "Task Manager",
+    link: "https://task-manager.example.com",
+    content:
+      "A collaborative task management app with real-time updates and team boards.",
+  },
+  {
+    name: "Chat Application",
+    link: "",
+    content:
+      "A real-time chat app with direct messages, rooms, and push notifications.",
+  },
+  {
+    name: "Analytics Dashboard",
+    link: "https://github.com/yourusername/analytics-dashboard",
+    content:
+      "A data visualization dashboard with charts, reports, and exportable insights.",
+  },
+];
+
+export async function seedProjectsIfEmpty() {
+  const count = await Project.estimatedDocumentCount();
+  if (count > 0) return;
+
+  await Project.insertMany(sampleProjects);
+  console.log(`Seeded ${sampleProjects.length} projects`);
 }
