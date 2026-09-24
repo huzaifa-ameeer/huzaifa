@@ -3,8 +3,8 @@ export default function Hero() {
     <section id="home" className="flex min-h-screen w-full items-center justify-center bg-white px-6 pb-20 pt-24 text-zinc-900 sm:px-10 lg:px-20 xl:px-40 dark:bg-black dark:text-white">
       <div className="grid w-full max-w-7xl items-center gap-10 md:grid-cols-2">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl">
-            Hi, I&apos;m <br /> <span className="text-zinc-500 dark:text-zinc-400">Huzaifa Ameer</span>
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl dark:text-zinc-400 xl:text-7xl">
+            Hi, I&apos;m <br /> <span className="text-zinc-500 dark:text-white">Huzaifa Ameer</span>
           </h1>
         </div>
 
