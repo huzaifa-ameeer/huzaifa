@@ -26,11 +26,11 @@ export default async function Work() {
               const card = (
                 <>
                   <h3 className="text-lg font-bold">{project.name}</h3>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                  <p className="mt-1.5 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
                     {project.content}
                   </p>
                   {project.link && (
-                    <span className="mt-2 text-sm font-semibold text-zinc-700 transition-colors group-hover:text-zinc-950 dark:text-zinc-200 dark:group-hover:text-white">
+                    <span className="mt-auto pt-4 text-sm font-semibold text-zinc-700 transition-colors group-hover:text-zinc-950 dark:text-zinc-200 dark:group-hover:text-white">
                       View Project &rarr;
                     </span>
                   )}
@@ -38,7 +38,7 @@ export default async function Work() {
               );
 
               const className =
-                "group flex h-full flex-col rounded-xl border border-zinc-200 bg-zinc-100 p-4 transition-colors hover:border-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/60 dark:hover:border-white";
+                "group flex h-full flex-col rounded-xl border border-zinc-200 bg-zinc-100 p-6 transition-colors hover:border-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/60 dark:hover:border-white";
 
               return project.link ? (
                 <a
