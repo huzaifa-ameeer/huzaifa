@@ -41,15 +41,27 @@ export type Project = {
   name: string;
   github: string;
   live: string;
+  link?: string;
   content: string;
   createdAt: string;
 };
+
+function normalizeProject(project: Project): Project {
+  const legacyLink = project.link?.trim() ?? "";
+  const github = project.github?.trim() ||
+    (legacyLink.includes("github.com") ? legacyLink : "");
+  const live = project.live?.trim() ||
+    (legacyLink && !legacyLink.includes("github.com") ? legacyLink : "");
+
+  return { ...project, github, live };
+}
 
 export async function getProjects(): Promise<Project[]> {
   try {
     const res = await fetch(`${API_URL}/api/projects`, { cache: "no-store" });
     if (!res.ok) return [];
-    return res.json();
+    const projects: Project[] = await res.json();
+    return projects.map(normalizeProject);
   } catch {
     return [];
   }

@@ -40,7 +40,7 @@ export default async function Work() {
             {projects.map((project) => (
               <div
                 key={project._id}
-      className="group flex h-full flex-col rounded-xl border border-zinc-800 bg-zinc-900/60 p-6 transition-colors hover:border-white dark:border-zinc-800 dark:bg-zinc-900/60 dark:hover:border-white"
+                className="group flex h-full flex-col rounded-xl border border-zinc-200 bg-zinc-100 p-6 text-zinc-900 transition-colors hover:border-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-white dark:hover:border-white"
     >
       <h3 className="text-lg font-bold">{project.name}</h3>
       <p className="mt-1.5 text-sm leading-relaxed text-zinc-400 dark:text-zinc-400">
