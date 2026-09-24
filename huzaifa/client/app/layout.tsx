@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import {Manrope } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import Navbar from "./components/Navbar/navbar"
 import "./globals.css";
 
 
-const manRope = Manrope({
-  variable: "--font-geist-mono",
+const jetBrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
 });
 
@@ -19,7 +19,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${manRope.variable}  h-full antialiased`}
+      className={`${jetBrainsMono.variable}  h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Navbar />
