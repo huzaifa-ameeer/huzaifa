@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import { connectDB } from "./config/db";
+import blogRoutes from "./routes/blog";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 5000;
@@ -16,6 +17,8 @@ app.get("/", (_req, res) => {
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok" });
 });
+
+app.use("/api/blogs", blogRoutes);
 
 connectDB().then(() => {
   app.listen(PORT, () => {
