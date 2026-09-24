@@ -3,7 +3,8 @@ import { Schema, model, InferSchemaType } from "mongoose";
 const projectSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
-    link: { type: String, trim: true, default: "" },
+    github: { type: String, trim: true, default: "" },
+    live: { type: String, trim: true, default: "" },
     content: { type: String, required: true, trim: true },
   },
   { timestamps: true }

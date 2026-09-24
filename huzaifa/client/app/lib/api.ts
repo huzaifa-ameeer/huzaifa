@@ -39,7 +39,8 @@ export async function getBlog(id: string): Promise<Blog | null> {
 export type Project = {
   _id: string;
   name: string;
-  link: string;
+  github: string;
+  live: string;
   content: string;
   createdAt: string;
 };

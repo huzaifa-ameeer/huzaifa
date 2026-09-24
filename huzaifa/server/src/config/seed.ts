@@ -37,25 +37,29 @@ export async function seedBlogsIfEmpty() {
 const sampleProjects = [
   {
     name: "E-Commerce Store",
-    link: "https://github.com/yourusername/ecommerce-store",
+    github: "https://github.com/yourusername/ecommerce-store",
+    live: "",
     content:
       "A full-featured e-commerce platform with cart, checkout, and payment integration.",
   },
   {
     name: "Task Manager",
-    link: "https://task-manager.example.com",
+    github: "",
+    live: "https://task-manager.example.com",
     content:
       "A collaborative task management app with real-time updates and team boards.",
   },
   {
     name: "Chat Application",
-    link: "",
+    github: "https://github.com/yourusername/chat-application",
+    live: "",
     content:
       "A real-time chat app with direct messages, rooms, and push notifications.",
   },
   {
     name: "Analytics Dashboard",
-    link: "https://github.com/yourusername/analytics-dashboard",
+    github: "https://github.com/yourusername/analytics-dashboard",
+    live: "https://analytics.example.com",
     content:
       "A data visualization dashboard with charts, reports, and exportable insights.",
   },
@@ -63,10 +67,33 @@ const sampleProjects = [
 
 export async function seedProjectsIfEmpty() {
   const count = await Project.estimatedDocumentCount();
-  if (count > 0) return;
+  if (count > 0) {
+    await migrateProjectLinks();
+    return;
+  }
 
   await Project.insertMany(sampleProjects);
   console.log(`Seeded ${sampleProjects.length} projects`);
+}
+
+export async function migrateProjectLinks() {
+  const old = await Project.find({
+    link: { $exists: true, $ne: "" },
+  });
+  if (old.length === 0) return;
+
+  let migrated = 0;
+  for (const project of old) {
+    const url = (project.get("link") as string) || "";
+    const update: { github: string; live: string; link?: undefined } = {
+      github: url.includes("github.com") ? url : "",
+      live: url.includes("github.com") ? "" : url,
+      link: undefined,
+    };
+    await project.set(update).save();
+    migrated++;
+  }
+  console.log(`Migrated ${migrated} project link(s) to github/live`);
 }
 
 const adminEmail = "huzaifaameer098@gmail.com";
