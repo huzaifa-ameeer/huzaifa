@@ -1,4 +1,6 @@
+import bcrypt from "bcryptjs";
 import Blog from "../models/Blog";
+import User from "../models/User";
 import Project from "../models/Project";
 
 const sampleBlogs = [
@@ -65,4 +67,20 @@ export async function seedProjectsIfEmpty() {
 
   await Project.insertMany(sampleProjects);
   console.log(`Seeded ${sampleProjects.length} projects`);
+}
+
+const adminEmail = "huzaifaameer098@gmail.com";
+const adminPassword = "huzaifa@786";
+
+export async function seedAdminIfMissing() {
+  const existing = await User.findOne({ email: adminEmail });
+  if (existing) return;
+
+  const hashed = await bcrypt.hash(adminPassword, 10);
+  await User.create({
+    email: adminEmail,
+    password: hashed,
+    role: "admin",
+  });
+  console.log(`Seeded admin user: ${adminEmail}`);
 }

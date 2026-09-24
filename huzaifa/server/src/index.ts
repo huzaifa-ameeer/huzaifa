@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import { connectDB } from "./config/db";
-import { seedBlogsIfEmpty, seedProjectsIfEmpty } from "./config/seed";
+import { seedAdminIfMissing, seedBlogsIfEmpty, seedProjectsIfEmpty } from "./config/seed";
+import authRoutes from "./routes/auth";
 import blogRoutes from "./routes/blog";
 import projectRoutes from "./routes/project";
 
@@ -22,10 +23,12 @@ app.get("/api/health", (_req, res) => {
 
 app.use("/api/blogs", blogRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/auth", authRoutes);
 
 connectDB().then(async () => {
   await seedBlogsIfEmpty();
   await seedProjectsIfEmpty();
+  await seedAdminIfMissing();
   app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
   });
