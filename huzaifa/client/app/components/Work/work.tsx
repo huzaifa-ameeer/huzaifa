@@ -21,7 +21,7 @@ export default async function Work() {
   return (
     <section
       id="work"
-      className="w-full bg-white px-6 pb-20 pt-8 text-zinc-900 md:px-12 lg:px-20 dark:bg-black dark:text-white"
+      className="w-full bg-white px-6 pb-20 pt-8 text-black dark:bg-black dark:text-white"
     >
       <div className="mx-auto max-w-7xl">
         <h2 className="text-4xl font-bold tracking-tight md:text-5xl">
@@ -40,22 +40,22 @@ export default async function Work() {
             {projects.map((project) => (
               <div
                 key={project._id}
-                className="group flex h-full flex-col rounded-xl border border-zinc-200 bg-zinc-100 p-6 transition-colors hover:border-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/60 dark:hover:border-white"
-              >
-                <h3 className="text-lg font-bold">{project.name}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
-                  {project.content}
-                </p>
-                <div className="mt-auto flex flex-wrap gap-2 pt-4">
-                  {project.github && (
-                    <ProjectLink href={project.github} label="GitHub" />
-                  )}
-                  {project.live && (
-                    <ProjectLink href={project.live} label="Live" />
-                  )}
-                </div>
-              </div>
-            ))}
+      className="group flex h-full flex-col rounded-xl border border-zinc-800 bg-zinc-900/60 p-6 transition-colors hover:border-white dark:border-zinc-800 dark:bg-zinc-900/60 dark:hover:border-white"
+    >
+      <h3 className="text-lg font-bold">{project.name}</h3>
+      <p className="mt-1.5 text-sm leading-relaxed text-zinc-400 dark:text-zinc-400">
+        {project.content}
+      </p>
+      <div className="mt-auto flex flex-wrap gap-2 pt-4">
+        {project.github && (
+          <ProjectLink href={project.github} label="GitHub" />
+        )}
+        {project.live && (
+          <ProjectLink href={project.live} label="Live" />
+        )}
+      </div>
+    </div>
+  ))}
           </div>
         )}
       </div>
