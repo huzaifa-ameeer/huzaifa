@@ -40,15 +40,13 @@ export function Sidebar({ open, active, onSelect, onClose, onLogout }: SidebarPr
       }`}
     >
       <div className="flex h-20 shrink-0 items-center justify-between px-4">
-        <div
-          className={`flex items-center gap-3.5 ${open ? "" : "md:justify-center md:w-full"}`}
-        >
+        <div className="flex items-center gap-3.5">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-sm font-bold text-white dark:bg-white dark:text-black">
             A
           </span>
           <span
             className={`overflow-hidden whitespace-nowrap text-base font-bold transition-all duration-300 ${
-              open ? "w-auto opacity-100" : "w-0 opacity-0 md:w-0"
+              open ? "w-auto opacity-100" : "w-0 opacity-0"
             }`}
           >
             Admin Panel
@@ -72,11 +70,11 @@ export function Sidebar({ open, active, onSelect, onClose, onLogout }: SidebarPr
               key={item.id}
               onClick={() => onSelect(item.id)}
               title={open ? undefined : item.label}
-              className={`flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium transition-all duration-300 ${
+              className={`flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium transition-colors duration-200 ${
                 isActive
                   ? "bg-zinc-200 text-zinc-900 dark:bg-zinc-800 dark:text-white"
                   : "text-zinc-600 hover:bg-zinc-200/60 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800/60 dark:hover:text-white"
-              } ${open ? "" : "md:justify-center md:px-0"}`}
+              }`}
             >
               <Icon size={18} className="shrink-0" />
               <span
@@ -97,9 +95,7 @@ export function Sidebar({ open, active, onSelect, onClose, onLogout }: SidebarPr
             href="/"
             target="_blank"
             title={open ? undefined : "View site"}
-            className={`flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-zinc-600 transition-all duration-300 hover:bg-zinc-200/60 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800/60 dark:hover:text-white ${
-              open ? "" : "md:justify-center md:px-0"
-            }`}
+            className="flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-zinc-600 transition-colors duration-200 hover:bg-zinc-200/60 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800/60 dark:hover:text-white"
           >
             <MonitorUp size={18} className="shrink-0" />
             <span
@@ -113,9 +109,7 @@ export function Sidebar({ open, active, onSelect, onClose, onLogout }: SidebarPr
           <button
             onClick={onLogout}
             title={open ? undefined : "Log out"}
-            className={`flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-zinc-600 transition-all duration-300 hover:bg-zinc-200/60 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800/60 dark:hover:text-white ${
-              open ? "" : "md:justify-center md:px-0"
-            }`}
+            className="flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-zinc-600 transition-colors duration-200 hover:bg-zinc-200/60 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800/60 dark:hover:text-white"
           >
             <LogOut size={18} className="shrink-0" />
             <span

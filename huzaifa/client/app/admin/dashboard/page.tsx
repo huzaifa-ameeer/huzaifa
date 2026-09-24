@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { API_URL } from "../../lib/api";
+import AdminBlogs from "../components/adminBlogs";
 import { Sidebar, type AdminSection } from "../components/sidebar";
 
 type Counts = {
@@ -176,6 +177,8 @@ export default function AdminDashboardPage() {
                 Use the sidebar to manage Projects and Blogs.
               </p>
             </>
+          ) : active === "blogs" ? (
+            <AdminBlogs />
           ) : (
             <div className="flex min-h-[50vh] items-center justify-center rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
               <div>
@@ -183,8 +186,8 @@ export default function AdminDashboardPage() {
                   {sectionTitle} management is coming soon
                 </p>
                 <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-                  You will be able to create, edit, and delete{" "}
-                  {active === "projects" ? "projects" : "blogs"} from here.
+                  You will be able to create, edit, and delete projects from
+                  here.
                 </p>
               </div>
             </div>

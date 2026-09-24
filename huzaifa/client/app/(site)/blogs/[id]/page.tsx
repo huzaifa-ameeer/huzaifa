@@ -5,6 +5,8 @@ import { getBlog, formatDate } from "../../../lib/api";
 
 export const dynamic = "force-dynamic";
 
+const isHtml = (value: string) => /<\/?[a-z][\s\S]*>/i.test(value);
+
 export default async function BlogPage({
   params,
 }: {
@@ -17,7 +19,7 @@ export default async function BlogPage({
     notFound();
   }
 
-  const paragraphs = blog.content.split(/\n+/);
+  const paragraphs = isHtml(blog.content) ? [] : blog.content.split(/\n+/);
 
   return (
     <main className="flex min-h-screen w-full flex-col bg-white px-6 pb-20 pt-24 text-zinc-900 md:px-12 lg:px-20 dark:bg-black dark:text-white">
@@ -40,11 +42,18 @@ export default async function BlogPage({
           {blog.title}
         </h1>
 
-        <div className="mt-8 space-y-5 text-lg leading-relaxed text-zinc-600 dark:text-zinc-300">
-          {paragraphs.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
-        </div>
+        {paragraphs.length > 0 ? (
+          <div className="mt-8 space-y-5 text-lg leading-relaxed text-zinc-600 dark:text-zinc-300">
+            {paragraphs.map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
+          </div>
+        ) : (
+          <div
+            className="blog-content mt-8 text-lg leading-relaxed text-zinc-600 dark:text-zinc-300"
+            dangerouslySetInnerHTML={{ __html: blog.content }}
+          />
+        )}
       </div>
     </main>
   );

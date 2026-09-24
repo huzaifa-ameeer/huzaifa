@@ -107,6 +107,9 @@ export default function Search() {
   }, [isOpen]);
 
   useEffect(() => {
+    const stripHtml = (html: string) =>
+      html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+
     fetch(`${API_URL}/api/blogs`)
       .then((res) => (res.ok ? res.json() : []))
       .then((data: Blog[]) =>
@@ -114,7 +117,7 @@ export default function Search() {
           data.map((blog) => ({
             id: `blog-${blog._id}`,
             title: blog.title,
-            description: blog.content.slice(0, 120),
+            description: stripHtml(blog.content).slice(0, 120),
             href: `/blogs/${blog._id}`,
             category: "Blog",
           }))
