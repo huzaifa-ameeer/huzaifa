@@ -1,4 +1,4 @@
-import Work from "../components/Work/work";
+import Work from "../../components/Work/work";
 
 export default function WorkPage() {
   return (

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
-import { getBlog, formatDate } from "../../lib/api";
+import { getBlog, formatDate } from "../../../lib/api";
 
 export const dynamic = "force-dynamic";
 

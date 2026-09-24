@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import { Toaster } from "react-hot-toast";
-import Navbar from "./components/Navbar/navbar"
 import "./globals.css";
 
 
@@ -22,7 +21,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${jetBrainsMono.variable}  h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Navbar />
         <Toaster
           position="top-center"
           toastOptions={{
