@@ -18,7 +18,12 @@ async function initialize() {
   await seedAdminIfMissing();
 }
 
-app.use(cors());
+const allowedOrigins = (process.env.CORS_ORIGIN ?? "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use(cors(allowedOrigins.length > 0 ? { origin: allowedOrigins } : undefined));
 app.use(express.json());
 
 app.get("/", (_req, res) => {

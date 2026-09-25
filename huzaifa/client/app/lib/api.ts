@@ -1,19 +1,6 @@
 const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
 
-function getDefaultApiUrl() {
-  if (typeof window !== "undefined") {
-    return process.env.NODE_ENV === "development" ? "http://localhost:5000" : "";
-  }
-
-  const vercelHost =
-    process.env.VERCEL_URL ??
-    process.env.VERCEL_BRANCH_URL ??
-    process.env.VERCEL_PROJECT_PRODUCTION_URL;
-
-  return vercelHost ? `https://${vercelHost}` : "http://localhost:5000";
-}
-
-export const API_URL = (configuredApiUrl || getDefaultApiUrl()).replace(/\/+$/, "");
+export const API_URL = (configuredApiUrl || "http://localhost:8001").replace(/\/+$/, "");
 
 async function fetchJson<T>(url: string): Promise<T | null> {
   const controller = new AbortController();

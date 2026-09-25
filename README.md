@@ -2,13 +2,15 @@
 
 A full-stack portfolio application with a Next.js frontend, an Express API, MongoDB persistence, JWT-based admin authentication, blog management, project management, and EmailJS contact delivery.
 
+The two applications are hosted separately: the frontend runs on Vercel and the API runs on Render. They talk to each other over HTTPS using the public API URL, so the backend must be allowed as a CORS origin by the frontend and vice versa is not needed.
+
 ## Project Structure
 
 ```text
 huzaifa/
-  client/   Next.js 16 frontend
-  server/   Express and MongoDB API
-vercel.json Vercel routing configuration
+  client/   Next.js 16 frontend, served on port 3001
+  server/   Express and MongoDB API, served on port 8001
+render.yaml Render blueprint for the API service
 ```
 
 ## Requirements
@@ -16,7 +18,8 @@ vercel.json Vercel routing configuration
 - Node.js 20 or newer
 - npm or Bun
 - MongoDB database
-- Vercel account for deployment
+- A Vercel account for the frontend
+- A Render account for the API
 
 ## Local Setup
 
@@ -30,19 +33,23 @@ cd ../server
 npm install
 ```
 
-Create `huzaifa/server/.env`:
+Create `huzaifa/server/.env` from `huzaifa/server/.env.example`:
 
 ```env
 MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/portfolio
 JWT_SECRET=replace-with-a-long-random-secret
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=replace-with-a-strong-password
+PORT=8001
+CORS_ORIGIN=http://localhost:3001
 ```
 
-Create or update `huzaifa/client/.env.local`:
+`CORS_ORIGIN` is a comma-separated list of allowed frontend origins. Leave it empty to accept any origin.
+
+Create `huzaifa/client/.env.local` from `huzaifa/client/.env.example`:
 
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_API_URL=http://localhost:8001
 NEXT_PUBLIC_EMAILJS_SERVICE_ID=your-service-id
 NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=your-template-id
 NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your-public-key
@@ -66,9 +73,9 @@ cd huzaifa/client
 npm run dev
 ```
 
-Open `http://localhost:3000` in a browser.
+Open `http://localhost:3001` in a browser. The API listens on `http://localhost:8001` and `GET /api/health` reports its status.
 
-The API uses port `5000` by default. If that port is occupied, the local server automatically selects the next available port and logs the selected URL. Update `NEXT_PUBLIC_API_URL` in the client environment file to match that port, then restart the Next.js development server.
+The API binds to the `PORT` value in `huzaifa/server/.env` and fails fast if the port is taken, so a stale process on `8001` has to be stopped instead of silently moving the server elsewhere.
 
 ## Production Builds
 
@@ -114,17 +121,44 @@ npm run lint
 
 Blog and project data are seeded when the database is empty. The admin account is seeded only when `ADMIN_EMAIL` and `ADMIN_PASSWORD` are configured.
 
-## Vercel Deployment
+## Backend Deployment (Render)
 
-The repository includes `vercel.json` with separate frontend and backend service roots. The backend entrypoint is `huzaifa/server/src/index.ts`; it is exported as an Express app and does not bind a local port in the Vercel runtime.
+`render.yaml` at the repository root describes the API service, so the whole service can be created from a blueprint.
+
+1. Push the changes to the repository that Render can read.
+2. In Render choose **New > Blueprint**, select the repository, and apply `render.yaml`. Creating it manually works as well with the settings below.
+3. Fill in the secrets that Render marks as `sync: false`: `MONGO_URI`, `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `CORS_ORIGIN`.
+4. Deploy and confirm the deploy log ends with a successful build. Render sets `PORT` itself, so the value from `.env` is only used locally.
+
+Manual service settings:
+
+| Setting | Value |
+| --- | --- |
+| Root directory | `huzaifa/server` |
+| Runtime | Node |
+| Build command | `npm ci && npm run build` |
+| Start command | `node dist/server.js` |
+| Health check path | `/api/health` |
+| Instance type | Free |
+
+Notes for the free tier:
+
+- Free web services sleep after a period of inactivity. The first request after a sleep can take up to about a minute, and pages that fetch data during that window render empty. Warm the service with a request to `/api/health` before sharing the site.
+- Free instances restart on every deploy and spin down daily, so uptime is never guaranteed.
+
+## Frontend Deployment (Vercel)
+
+The frontend is a standalone Next.js app. Vercel auto-detects the framework, so no `vercel.json` is required.
 
 1. Import the repository into Vercel.
-2. Add the server variables from `huzaifa/server/.env` to the Vercel project environment settings.
-3. Add the client EmailJS variables to the Vercel environment settings.
-4. Set `NEXT_PUBLIC_API_URL` to the deployed API URL only when the frontend and backend are deployed as separate Vercel projects. When using the repository's configured rewrites, leave it unset so the client uses same-origin `/api` requests in production.
-5. Deploy from the repository root.
+2. Set **Root Directory** to `huzaifa/client` so the build runs against the Next.js app instead of the repository root.
+3. Confirm the framework preset is **Next.js** and leave the build and install commands at their defaults.
+4. Add the environment variables: `NEXT_PUBLIC_API_URL` set to the deployed API URL, for example `https://portfolio-api.onrender.com`, plus the three `NEXT_PUBLIC_EMAILJS_*` values.
+5. Deploy, then copy the resulting `https://<project>.vercel.app` origin into the Render service's `CORS_ORIGIN` value and redeploy the API.
 
-Do not use the local `PORT` setting as a Vercel deployment requirement. Vercel supplies the runtime port and invokes the exported API application directly.
+Every browser request goes straight to the Render URL; Vercel is not used as a proxy, so the API has to be reachable publicly. `NEXT_PUBLIC_*` values are inlined at build time, so changing the API URL requires a new Vercel deployment rather than a restart.
+
+Preview deployments get their own URL, so add them to `CORS_ORIGIN` as well or admin API calls from previews will be rejected by the browser.
 
 ## Technology
 
@@ -133,4 +167,4 @@ Do not use the local `PORT` setting as a Vercel deployment requirement. Vercel s
 - MongoDB with Mongoose
 - JWT and bcryptjs for admin authentication
 - EmailJS for contact messages
-- Vercel for deployment
+- Vercel for the frontend and Render for the API
