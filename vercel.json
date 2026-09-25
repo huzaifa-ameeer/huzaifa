@@ -1,0 +1,27 @@
+{
+  "services": {
+    "frontend": {
+      "root": "huzaifa/client/",
+      "framework": "nextjs"
+    },
+    "backend": {
+      "root": "huzaifa/server/",
+      "framework": "express",
+      "entrypoint": "src/index.ts"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": {
+        "service": "backend"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "frontend"
+      }
+    }
+  ]
+}

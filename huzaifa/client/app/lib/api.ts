@@ -1,5 +1,19 @@
-export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
+
+function getDefaultApiUrl() {
+  if (typeof window !== "undefined") {
+    return process.env.NODE_ENV === "development" ? "http://localhost:5000" : "";
+  }
+
+  const vercelHost =
+    process.env.VERCEL_URL ??
+    process.env.VERCEL_BRANCH_URL ??
+    process.env.VERCEL_PROJECT_PRODUCTION_URL;
+
+  return vercelHost ? `https://${vercelHost}` : "http://localhost:5000";
+}
+
+export const API_URL = (configuredApiUrl || getDefaultApiUrl()).replace(/\/+$/, "");
 
 export type Blog = {
   _id: string;

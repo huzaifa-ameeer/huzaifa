@@ -96,10 +96,15 @@ export async function migrateProjectLinks() {
   console.log(`Migrated ${migrated} project link(s) to github/live`);
 }
 
-const adminEmail = "huzaifaameer098@gmail.com";
-const adminPassword = "huzaifa@786";
-
 export async function seedAdminIfMissing() {
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const adminPassword = process.env.ADMIN_PASSWORD;
+
+  if (!adminEmail || !adminPassword) {
+    console.warn("ADMIN_EMAIL and ADMIN_PASSWORD are not defined; skipping admin seed");
+    return;
+  }
+
   const existing = await User.findOne({ email: adminEmail });
   if (existing) return;
 

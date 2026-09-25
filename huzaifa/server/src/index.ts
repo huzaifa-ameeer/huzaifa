@@ -1,4 +1,4 @@
-import express from "express";
+import express, { type ErrorRequestHandler } from "express";
 import cors from "cors";
 import "dotenv/config";
 import { connectDB } from "./config/db";
@@ -8,10 +8,29 @@ import blogRoutes from "./routes/blog";
 import projectRoutes from "./routes/project";
 
 const app = express();
-const PORT = Number(process.env.PORT) || 5000;
+
+let initialization: Promise<void> | undefined;
+
+async function initialize() {
+  await connectDB();
+  await seedBlogsIfEmpty();
+  await seedProjectsIfEmpty();
+  await seedAdminIfMissing();
+}
 
 app.use(cors());
 app.use(express.json());
+
+app.use((_req, _res, next) => {
+  if (!initialization) {
+    initialization = initialize().catch((error) => {
+      initialization = undefined;
+      throw error;
+    });
+  }
+
+  initialization.then(() => next()).catch(next);
+});
 
 app.get("/", (_req, res) => {
   res.json({ message: "Portfolio API is running" });
@@ -25,11 +44,11 @@ app.use("/api/blogs", blogRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/auth", authRoutes);
 
-connectDB().then(async () => {
-  await seedBlogsIfEmpty();
-  await seedProjectsIfEmpty();
-  await seedAdminIfMissing();
-  app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-  });
-});
+const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
+  console.error(error);
+  res.status(500).json({ message: "Internal server error" });
+};
+
+app.use(errorHandler);
+
+export default app;

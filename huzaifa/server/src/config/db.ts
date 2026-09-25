@@ -4,8 +4,7 @@ export async function connectDB() {
   const mongoUri = process.env.MONGO_URI;
 
   if (!mongoUri) {
-    console.error("MONGO_URI is not defined in the environment");
-    process.exit(1);
+    throw new Error("MONGO_URI is not defined in the environment");
   }
 
   try {
@@ -13,6 +12,6 @@ export async function connectDB() {
     console.log("MongoDB connected");
   } catch (error) {
     console.error("MongoDB connection error:", error);
-    process.exit(1);
+    throw error;
   }
 }
