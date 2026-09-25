@@ -2,15 +2,16 @@
 
 A full-stack portfolio application with a Next.js frontend, an Express API, MongoDB persistence, JWT-based admin authentication, blog management, project management, and EmailJS contact delivery.
 
-The two applications are hosted separately: the frontend runs on Vercel and the API runs on Render. They talk to each other over HTTPS using the public API URL, so the backend must be allowed as a CORS origin by the frontend and vice versa is not needed.
+Both applications run on Vercel as two separate projects, so the site is served from two links. The frontend calls the API over HTTPS using `NEXT_PUBLIC_API_URL`, and the API only accepts the frontend origin through `CORS_ORIGIN`.
 
 ## Project Structure
 
 ```text
 huzaifa/
-  client/   Next.js 16 frontend, served on port 3001
-  server/   Express and MongoDB API, served on port 8001
-render.yaml Render blueprint for the API service
+  client/            Next.js 16 frontend, local port 3001
+  server/            Express and MongoDB API, local port 8001
+    api/index.ts     Vercel serverless function entrypoint for the API
+    vercel.json      keeps the API project on the "Other" framework preset
 ```
 
 ## Requirements
@@ -18,8 +19,7 @@ render.yaml Render blueprint for the API service
 - Node.js 20 or newer
 - npm or Bun
 - MongoDB database
-- A Vercel account for the frontend
-- A Render account for the API
+- A Vercel account
 
 ## Local Setup
 
@@ -121,50 +121,60 @@ npm run lint
 
 Blog and project data are seeded when the database is empty. The admin account is seeded only when `ADMIN_EMAIL` and `ADMIN_PASSWORD` are configured.
 
-## Backend Deployment (Render)
+## Deployment Overview
 
-`render.yaml` at the repository root describes the API service, so the whole service can be created from a blueprint.
+| Project | Root directory | Framework preset | Result |
+| --- | --- | --- | --- |
+| Frontend | `huzaifa/client` | Next.js | `https://<frontend>.vercel.app` |
+| API | `huzaifa/server` | Other | `https://<api>.vercel.app` |
 
-1. Push the changes to the repository that Render can read.
-2. In Render choose **New > Blueprint**, select the repository, and apply `render.yaml`. Creating it manually works as well with the settings below.
-3. Fill in the secrets that Render marks as `sync: false`: `MONGO_URI`, `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `CORS_ORIGIN`.
-4. Deploy and confirm the deploy log ends with a successful build. Render sets `PORT` itself, so the value from `.env` is only used locally.
+Deploy the API first. The frontend build inlines `NEXT_PUBLIC_API_URL`, so the API URL has to exist before the frontend is built, and any later change to it requires a new frontend deployment.
 
-Manual service settings:
+## API Deployment (Vercel)
 
-| Setting | Value |
-| --- | --- |
-| Root directory | `huzaifa/server` |
-| Runtime | Node |
-| Build command | `npm ci && npm run build` |
-| Start command | `node dist/server.js` |
-| Health check path | `/api/health` |
-| Instance type | Free |
+`huzaifa/server/api/index.ts` is the serverless function entrypoint. It exports the Express app from `src/index.ts`, so Vercel builds the API as a Node function without any framework preset.
 
-Notes for the free tier:
-
-- Free web services sleep after a period of inactivity. The first request after a sleep can take up to about a minute, and pages that fetch data during that window render empty. Warm the service with a request to `/api/health` before sharing the site.
-- Free instances restart on every deploy and spin down daily, so uptime is never guaranteed.
+1. Import the repository into Vercel and create the project as a **new project**.
+2. Set **Root Directory** to `huzaifa/server`.
+3. Confirm the framework preset is **Other**. `huzaifa/server/vercel.json` pins this, so leave the preset untouched.
+4. Leave the install and build commands empty. Vercel compiles the function directly and the local `build` script is not needed.
+5. Add the environment variables: `MONGO_URI`, `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `CORS_ORIGIN`. For the first deploy, set `CORS_ORIGIN` to `http://localhost:3001` and replace it once the frontend URL exists.
+6. Deploy and check the deploy log. Then confirm `https://<api>.vercel.app/api/health` returns `{"status":"ok"}`.
 
 ## Frontend Deployment (Vercel)
 
-The frontend is a standalone Next.js app. Vercel auto-detects the framework, so no `vercel.json` is required.
-
-1. Import the repository into Vercel.
-2. Set **Root Directory** to `huzaifa/client` so the build runs against the Next.js app instead of the repository root.
+1. Import the same repository into Vercel and create a **second** project from it.
+2. Set **Root Directory** to `huzaifa/client`.
 3. Confirm the framework preset is **Next.js** and leave the build and install commands at their defaults.
-4. Add the environment variables: `NEXT_PUBLIC_API_URL` set to the deployed API URL, for example `https://portfolio-api.onrender.com`, plus the three `NEXT_PUBLIC_EMAILJS_*` values.
-5. Deploy, then copy the resulting `https://<project>.vercel.app` origin into the Render service's `CORS_ORIGIN` value and redeploy the API.
-
-Every browser request goes straight to the Render URL; Vercel is not used as a proxy, so the API has to be reachable publicly. `NEXT_PUBLIC_*` values are inlined at build time, so changing the API URL requires a new Vercel deployment rather than a restart.
+4. Add the environment variables: `NEXT_PUBLIC_API_URL` set to the deployed API URL, for example `https://<api>.vercel.app`, plus the three `NEXT_PUBLIC_EMAILJS_*` values.
+5. Deploy, then copy the resulting `https://<frontend>.vercel.app` origin into the API project's `CORS_ORIGIN` value and redeploy the API.
 
 Preview deployments get their own URL, so add them to `CORS_ORIGIN` as well or admin API calls from previews will be rejected by the browser.
+
+## Hobby Plan Constraints
+
+Both projects run on the Hobby plan, where the API is a serverless function rather than a server:
+
+- Function duration is capped at 10 seconds. Every endpoint here answers in well under that, but a slow MongoDB connection eats into the budget.
+- Cold starts happen on the first request after an idle period and take a few seconds, so a page load right after a cold start can render empty. Call `/api/health` to warm the function.
+- There is no persistent process, so `src/config/db.ts` caches one MongoDB connection per warm instance with a single-connection pool and retries a failed connect on the next request.
+- Deployments and cold starts cost a few hundred milliseconds of build-free invocation time, and the free tier allows at most 12 serverless functions per project. This API is one function.
+
+If the API becomes slow or unreliable under real traffic, move the `huzaifa/server` project to Render or Railway. Only that project changes; the frontend keeps pointing at whichever URL is in `NEXT_PUBLIC_API_URL`.
+
+## Troubleshooting
+
+- **`Module not found` or a build error in the API project:** the root directory is probably the repository root. Set it to `huzaifa/server`.
+- **Frontend builds ignore `NEXT_PUBLIC_API_URL`:** the variable is inlined at build time, so it has to be present when the build runs. Add it, then redeploy.
+- **Admin or search requests fail in the browser console with a CORS error:** the frontend origin is missing from `CORS_ORIGIN` on the API project.
+- **Vercel frontend build fails during install:** `huzaifa/client/package.json` pins `packageManager` to Bun, so Vercel installs with Bun. Delete that field to fall back to npm and `package-lock.json`.
+- **The API is slow right after a deploy:** it is a cold start, not a hang. Retry once.
 
 ## Technology
 
 - Next.js, React, TypeScript, and Tailwind CSS
-- Express and TypeScript
+- Express and TypeScript, deployed as a Vercel serverless function
 - MongoDB with Mongoose
 - JWT and bcryptjs for admin authentication
 - EmailJS for contact messages
-- Vercel for the frontend and Render for the API
+- Vercel for both the frontend and the API
