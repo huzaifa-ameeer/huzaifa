@@ -21,6 +21,14 @@ async function initialize() {
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (_req, res) => {
+  res.json({ message: "Portfolio API is running" });
+});
+
+app.get("/api/health", (_req, res) => {
+  res.json({ status: "ok" });
+});
+
 app.use((_req, _res, next) => {
   if (!initialization) {
     initialization = initialize().catch((error) => {
@@ -30,14 +38,6 @@ app.use((_req, _res, next) => {
   }
 
   initialization.then(() => next()).catch(next);
-});
-
-app.get("/", (_req, res) => {
-  res.json({ message: "Portfolio API is running" });
-});
-
-app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok" });
 });
 
 app.use("/api/blogs", blogRoutes);

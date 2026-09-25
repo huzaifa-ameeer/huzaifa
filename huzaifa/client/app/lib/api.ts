@@ -15,6 +15,24 @@ function getDefaultApiUrl() {
 
 export const API_URL = (configuredApiUrl || getDefaultApiUrl()).replace(/\/+$/, "");
 
+async function fetchJson<T>(url: string): Promise<T | null> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
+
+  try {
+    const response = await fetch(url, {
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    if (!response.ok) return null;
+    return response.json();
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 export type Blog = {
   _id: string;
   title: string;
@@ -31,23 +49,11 @@ export function formatDate(date: string) {
 }
 
 export async function getBlogs(): Promise<Blog[]> {
-  try {
-    const res = await fetch(`${API_URL}/api/blogs`, { cache: "no-store" });
-    if (!res.ok) return [];
-    return res.json();
-  } catch {
-    return [];
-  }
+  return (await fetchJson<Blog[]>(`${API_URL}/api/blogs`)) ?? [];
 }
 
 export async function getBlog(id: string): Promise<Blog | null> {
-  try {
-    const res = await fetch(`${API_URL}/api/blogs/${id}`, { cache: "no-store" });
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
+  return fetchJson<Blog>(`${API_URL}/api/blogs/${id}`);
 }
 
 export type Project = {
@@ -71,12 +77,6 @@ function normalizeProject(project: Project): Project {
 }
 
 export async function getProjects(): Promise<Project[]> {
-  try {
-    const res = await fetch(`${API_URL}/api/projects`, { cache: "no-store" });
-    if (!res.ok) return [];
-    const projects: Project[] = await res.json();
-    return projects.map(normalizeProject);
-  } catch {
-    return [];
-  }
+  const projects = await fetchJson<Project[]>(`${API_URL}/api/projects`);
+  return projects?.map(normalizeProject) ?? [];
 }
