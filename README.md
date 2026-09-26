@@ -105,6 +105,19 @@ cd ../client
 npm run lint
 ```
 
+## Frontend Data Loading
+
+Blog and project pages fetch their data at request time rather than relying on
+build-time page output. While a public page is waiting for its data, the shared
+`huzaifa/client/app/(site)/loading.tsx` fallback shows a centered spinner over
+the full viewport, using the active theme's background color.
+
+The frontend retries transient API and server errors with increasing delays and
+uses a 15-second timeout per request. Successful blog and project list responses
+are cached for 60 seconds; individual blog responses are cached for 300 seconds.
+The API may still take a few seconds to answer its first request after an idle
+cold start.
+
 ## API Endpoints
 
 | Method | Endpoint | Purpose |
@@ -156,7 +169,7 @@ Preview deployments get their own URL, so add them to `CORS_ORIGIN` as well or a
 Both projects run on the Hobby plan, where the API is a serverless function rather than a server:
 
 - Function duration is capped at 10 seconds. Every endpoint here answers in well under that, but a slow MongoDB connection eats into the budget.
-- Cold starts happen on the first request after an idle period and take a few seconds, so a page load right after a cold start can render empty. Call `/api/health` to warm the function.
+- Cold starts happen on the first request after an idle period and can take a few seconds. The frontend shows a loading spinner while waiting and retries transient API or server errors. Call `/api/health` to warm the function before a visit if needed.
 - There is no persistent process, so `src/config/db.ts` caches one MongoDB connection per warm instance with a single-connection pool and retries a failed connect on the next request.
 - Deployments and cold starts cost a few hundred milliseconds of build-free invocation time, and the free tier allows at most 12 serverless functions per project. This API is one function.
 
