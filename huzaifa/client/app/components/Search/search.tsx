@@ -53,6 +53,7 @@ export default function Search() {
   const inputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const wasOpenRef = useRef(false);
+  const resultsLoadedRef = useRef(false);
   const router = useRouter();
 
   const openSearch = useCallback(() => {
@@ -143,6 +144,9 @@ export default function Search() {
   }, [activeIndex, isOpen]);
 
   useEffect(() => {
+    if (!isOpen || resultsLoadedRef.current) return;
+    resultsLoadedRef.current = true;
+
     const stripHtml = (html: string) =>
       html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 
@@ -175,7 +179,7 @@ export default function Search() {
         )
       )
       .catch(() => setProjectResults([]));
-  }, []);
+  }, [isOpen]);
 
   const results = useMemo(() => {
     const dynamicResults = [

@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { connection } from "next/server";
 import { getBlogs, formatDate } from "../../lib/api";
 
 export default async function Blogs() {
+  await connection();
   const blogs = await getBlogs();
 
   return (

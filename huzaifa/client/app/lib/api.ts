@@ -2,22 +2,39 @@ const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
 
 export const API_URL = (configuredApiUrl || "http://localhost:8001").replace(/\/+$/, "");
 
-async function fetchJson<T>(url: string): Promise<T | null> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5000);
+const REQUEST_TIMEOUT_MS = 15000;
+const RETRY_DELAYS_MS = [0, 500, 1500, 3000];
 
-  try {
-    const response = await fetch(url, {
-      cache: "no-store",
-      signal: controller.signal,
-    });
-    if (!response.ok) return null;
-    return response.json();
-  } catch {
-    return null;
-  } finally {
-    clearTimeout(timeout);
+const LISTS_REVALIDATE_SECONDS = 60;
+const BLOG_REVALIDATE_SECONDS = 300;
+
+type FetchCacheOptions = {
+  revalidate: number;
+  tags: string[];
+};
+
+async function fetchJson<T>(url: string, cache: FetchCacheOptions): Promise<T | null> {
+  for (const delay of RETRY_DELAYS_MS) {
+    if (delay > 0) {
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+
+    try {
+      const response = await fetch(url, {
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+        next: { revalidate: cache.revalidate, tags: cache.tags },
+      });
+
+      if (response.status >= 500) continue;
+      if (!response.ok) return null;
+
+      return (await response.json()) as T;
+    } catch {
+      continue;
+    }
   }
+
+  return null;
 }
 
 export type Blog = {
@@ -36,11 +53,19 @@ export function formatDate(date: string) {
 }
 
 export async function getBlogs(): Promise<Blog[]> {
-  return (await fetchJson<Blog[]>(`${API_URL}/api/blogs`)) ?? [];
+  const blogs = await fetchJson<Blog[]>(`${API_URL}/api/blogs`, {
+    revalidate: LISTS_REVALIDATE_SECONDS,
+    tags: ["blogs"],
+  });
+
+  return blogs ?? [];
 }
 
 export async function getBlog(id: string): Promise<Blog | null> {
-  return fetchJson<Blog>(`${API_URL}/api/blogs/${id}`);
+  return fetchJson<Blog>(`${API_URL}/api/blogs/${id}`, {
+    revalidate: BLOG_REVALIDATE_SECONDS,
+    tags: ["blogs", `blog:${id}`],
+  });
 }
 
 export type Project = {
@@ -64,6 +89,10 @@ function normalizeProject(project: Project): Project {
 }
 
 export async function getProjects(): Promise<Project[]> {
-  const projects = await fetchJson<Project[]>(`${API_URL}/api/projects`);
+  const projects = await fetchJson<Project[]>(`${API_URL}/api/projects`, {
+    revalidate: LISTS_REVALIDATE_SECONDS,
+    tags: ["projects"],
+  });
+
   return projects?.map(normalizeProject) ?? [];
 }

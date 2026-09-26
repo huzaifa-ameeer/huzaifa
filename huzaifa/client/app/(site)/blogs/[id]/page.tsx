@@ -1,17 +1,24 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
-import { getBlog, formatDate } from "../../../lib/api";
+import { connection } from "next/server";
+import { getBlog, getBlogs, formatDate } from "../../../lib/api";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 const isHtml = (value: string) => /<\/?[a-z][\s\S]*>/i.test(value);
+
+export async function generateStaticParams() {
+  const blogs = await getBlogs();
+  return blogs.map((blog) => ({ id: blog._id }));
+}
 
 export default async function BlogPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await connection();
   const { id } = await params;
   const blog = await getBlog(id);
 

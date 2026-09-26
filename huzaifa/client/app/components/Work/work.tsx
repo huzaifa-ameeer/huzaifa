@@ -1,4 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
+import { connection } from "next/server";
 import { getProjects } from "../../lib/api";
 
 function ProjectLink({ href, label }: { href: string; label: string }) {
@@ -16,6 +17,7 @@ function ProjectLink({ href, label }: { href: string; label: string }) {
 }
 
 export default async function Work() {
+  await connection();
   const projects = await getProjects();
 
   return (
