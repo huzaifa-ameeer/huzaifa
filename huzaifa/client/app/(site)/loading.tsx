@@ -2,7 +2,7 @@ import { LoaderCircle } from "lucide-react";
 
 export default function Loading() {
   return (
-    <main className="flex min-h-[70vh] items-center justify-center bg-white dark:bg-black">
+    <main className="flex min-h-screen items-center justify-center bg-background">
       <div role="status" aria-label="Loading">
         <LoaderCircle
           aria-hidden="true"
