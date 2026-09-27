@@ -102,7 +102,7 @@ export default function AdminProjects() {
     try {
       const isNew = editingId === null;
       const res = await fetch(
-        `${API_URL}/api/projects${isNew ? "" : `/${editingId}`}`,
+        `/api/admin/projects${isNew ? "" : `/${editingId}`}`,
         {
           method: isNew ? "POST" : "PUT",
           headers: authHeaders(),
@@ -133,7 +133,7 @@ export default function AdminProjects() {
 
     setDeleting(true);
     try {
-      const res = await fetch(`${API_URL}/api/projects/${projectToDelete._id}`, {
+      const res = await fetch(`/api/admin/projects/${projectToDelete._id}`, {
         method: "DELETE",
         headers: authHeaders(),
       });

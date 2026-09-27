@@ -116,6 +116,15 @@ are cached for 60 seconds; individual blog responses are cached for 300 seconds.
 The API may still take a few seconds to answer its first request after an idle
 cold start.
 
+Because those responses are cached, saving in the admin panel would otherwise
+leave the public pages serving the previous list. Admin writes therefore go
+through `huzaifa/client/app/api/admin/[...path]/route.ts`, which forwards the
+mutation to the API and then invalidates the affected cache tags and paths, so
+new content appears on the next visit instead of after the cache window.
+
+`/blogs/[id]` is rendered per request and has no `generateStaticParams`, so a
+post created after a build has a working detail page without a redeploy.
+
 ## API Endpoints
 
 | Method | Endpoint | Purpose |
@@ -131,6 +140,12 @@ cold start.
 | `DELETE` | `/api/projects/:id` | Delete a project; admin token required |
 
 Blog and project data are seeded when the database is empty. The admin account is seeded only when `ADMIN_EMAIL` and `ADMIN_PASSWORD` are configured.
+
+The admin panel does not call these endpoints from the browser. It posts to the
+frontend route handler `POST`, `PUT`, and `DELETE /api/admin/{blogs|projects}[/:id]`,
+which relays the call plus the admin token to the API and then revalidates the
+public caches. The handler only relays `blogs` and `projects` with a 24-character
+hex id, so it cannot be used to reach other API paths.
 
 ## Deployment Overview
 

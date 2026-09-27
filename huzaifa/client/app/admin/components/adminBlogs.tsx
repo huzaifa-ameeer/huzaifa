@@ -86,7 +86,7 @@ export default function AdminBlogs() {
     try {
       const isNew = editingId === null;
       const res = await fetch(
-        `${API_URL}/api/blogs${isNew ? "" : `/${editingId}`}`,
+        `/api/admin/blogs${isNew ? "" : `/${editingId}`}`,
         {
           method: isNew ? "POST" : "PUT",
           headers: authHeaders(),
@@ -112,7 +112,7 @@ export default function AdminBlogs() {
 
     setDeleting(true);
     try {
-      const res = await fetch(`${API_URL}/api/blogs/${blogToDelete._id}`, {
+      const res = await fetch(`/api/admin/blogs/${blogToDelete._id}`, {
         method: "DELETE",
         headers: authHeaders(),
       });

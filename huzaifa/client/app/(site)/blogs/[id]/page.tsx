@@ -2,16 +2,9 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
-import { getBlog, getBlogs, formatDate } from "../../../lib/api";
-
-export const revalidate = 300;
+import { getBlog, formatDate } from "../../../lib/api";
 
 const isHtml = (value: string) => /<\/?[a-z][\s\S]*>/i.test(value);
-
-export async function generateStaticParams() {
-  const blogs = await getBlogs();
-  return blogs.map((blog) => ({ id: blog._id }));
-}
 
 export default async function BlogPage({
   params,
