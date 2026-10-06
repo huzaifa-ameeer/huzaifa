@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(npm:*)",
+      "Shell(npx eslint app/)",
+      "Shell(site:*)",
+      "Shell(/page.tsx:*)",
+      "Shell(/work/page.tsx:*)",
+      "Shell(/blogs/page.tsx:*)",
+      "Shell(npx tsc --noEmit)"
+    ],
+    "deny": [],
+    "defaultMode": "default"
+  }
+}
