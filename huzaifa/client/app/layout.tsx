@@ -12,6 +12,9 @@ const jetBrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Huzaifa Ameer",
   description: "Portfolio of Huzaifa Ameer",
+  icons: {
+    icon: { url: "/ronaldo.gif", type: "image/gif" },
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
